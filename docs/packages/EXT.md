@@ -28,3 +28,23 @@ Toate testele folosesc simulatorul configurat explicit (fără aleatoriu), deci 
 
 ## Limite (de completat în ADR)
 - Worker-ul rulează în același proces cu serverul: dacă serverul se oprește, livrările `PENDING` sunt reluate la pornire (sunt salvate în baza de date), dar nu există coadă distribuită.
+
+## Stadiu M2: registrul extern, implementat și verificat
+- Simulator: `server/src/external/registrySimulator.js`. Defectele se programează într-o coadă (`ok`, `error`, `rateLimit`, `badRequest`, `timeout`, `lostResponse`), deci fiecare test știe exact ce se va întâmpla.
+- Client cu timeout (`AbortController`) și clasificarea erorilor: `server/src/external/registryClient.js`.
+- Outbox + worker + backoff + Retry-After + reluare manuală: `server/src/services/deliveryService.js`.
+- Teste (`server/tests/external.test.js`), toate deterministe; timpul e simulat prin parametrul `now`, deci testele nu așteaptă secunde reale:
+
+| Scenariu | Rezultat verificat |
+|---|---|
+| normal | `SENT` din prima încercare, cu `externalRef` |
+| timeout → ok | `PENDING` cu eroare „timeout”, apoi `SENT` la a doua încercare; o singură înregistrare |
+| 500 × 3 → ok | intervale 1 s, 2 s, 4 s (exponențial), apoi `SENT` după 4 încercări |
+| 429 | următoarea încercare exact după `Retry-After` |
+| eșec repetat | `FAILED` după `maxAttempts`, numărul de cereri e exact `maxAttempts` |
+| 400 | `FAILED` imediat, fără reîncercări |
+| răspuns pierdut | registrul a înregistrat, noi am văzut timeout; la retry primim răspunsul duplicat; tot o singură înregistrare |
+| registru oprit | eroare de rețea, reîncercare programată |
+| reluare manuală | `FAILED → PENDING → SENT`, cu aceeași cheie de idempotență |
+
+Simulatorul de rețea între client și server (punctul 2) se face în M3, împreună cu motorul de sincronizare din browser.

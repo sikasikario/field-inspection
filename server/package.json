@@ -9,7 +9,8 @@
     "start": "NODE_ENV=production node --env-file-if-exists=.env src/index.js",
     "seed": "node --env-file-if-exists=.env src/seed.js",
     "test": "vitest run",
-    "coverage": "vitest run --coverage"
+    "coverage": "vitest run --coverage",
+    "registry": "node src/external/runRegistry.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

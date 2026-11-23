@@ -8,8 +8,8 @@ export default defineConfig({
       provider: 'v8',
       reporter: ['text', 'html', 'json-summary'],
       include: ['src/**/*.js'],
-      // Excluderi justificate: punctul de pornire și scriptul de seed nu conțin logică de business.
-      exclude: ['src/index.js', 'src/seed.js'],
+      // Excluderi justificate: punctele de pornire (server, simulator) și scriptul de seed nu conțin logică de business.
+      exclude: ['src/index.js', 'src/seed.js', 'src/external/runRegistry.js'],
       thresholds: { statements: 70, branches: 60 },
     },
   },

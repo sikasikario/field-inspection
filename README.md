@@ -16,9 +16,12 @@ Aplicație web în care inspectorii completează checklist-uri pe teren, inclusi
 npm install                     # instalează dependențele pentru server și client
 cp .env.example server/.env     # apoi editați JWT_SECRET
 npm run seed                    # creează baza de date cu date demo (36 inspecții)
-npm run dev:server              # API pe http://localhost:3000
-npm run dev:client              # într-un al doilea terminal: aplicația pe http://localhost:5173
+npm run registry                # terminal 1: registrul extern simulat pe http://localhost:4000
+npm run dev:server              # terminal 2: API pe http://localhost:3000
+npm run dev:client              # terminal 3: aplicația pe http://localhost:5173
 ```
+
+Registrul extern e opțional pentru pornire: dacă nu rulează, livrările inspecțiilor aprobate rămân `PENDING` și sunt reîncercate automat (asta e chiar comportamentul cerut de pachetul EXT).
 
 Conturi demo (parola pentru toate: `parola123`):
 - coordonator: `coordonator@demo.ro`
@@ -47,5 +50,5 @@ npm start         # pornește serverul în mod producție
 
 ## Stadiu
 - [x] M1: analiză, design, schelet executabil
-- [ ] M2: API, persistență, reguli, teste, primul scenariu de pachet
+- [x] M2: API, persistență, reguli, teste, primul scenariu de pachet (EXT complet pe server, sincronizare idempotentă)
 - [ ] M3: SPA completă, pachete validate, E2E, încărcare, ADR, demo

@@ -2,7 +2,7 @@
   "name": "field-inspection",
   "version": "0.1.0",
   "private": true,
-  "description": "Inspecții de teren offline — proiect Tehnologii Web (Tema 7)",
+  "description": "Inspec\u021bii de teren offline \u2014 proiect Tehnologii Web (Tema 7)",
   "type": "module",
   "workspaces": [
     "server",
@@ -15,7 +15,8 @@
     "test": "npm test --workspace server",
     "coverage": "npm run coverage --workspace server",
     "build": "npm run build --workspace client",
-    "start": "npm start --workspace server"
+    "start": "npm start --workspace server",
+    "registry": "npm run registry --workspace server"
   },
   "engines": {
     "node": ">=22"

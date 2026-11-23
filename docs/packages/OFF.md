@@ -56,3 +56,10 @@ Un conflict apare când inspecția s-a schimbat pe server după ce inspectorul a
 ## Limite (de completat în ADR)
 - Datele locale nu sunt criptate pe dispozitiv.
 - Dacă utilizatorul șterge datele browserului înainte de sincronizare, modificările se pierd.
+
+## Stadiu M2: partea de server, implementată și verificată
+- `POST /api/sync` primește loturi de operații (`create`, `saveAnswers`, `transition`), fiecare cu `opId`. Rezultatul e salvat în `SyncOperation`; o retransmitere primește rezultatul salvat (`replayed: true`).
+- `GET /api/sync/pull?since=` aduce doar inspecțiile modificate de la ultima sincronizare.
+- Conflictele sunt raportate per operație (409 `VERSION_CONFLICT` / `NOT_EDITABLE`, cu varianta serverului), iar restul lotului continuă.
+- Teste în `server/tests/sync.test.js`: lot offline complet, lot retransmis de 3 ori (o singură aplicare), **aceeași operație trimisă de 5 ori în paralel** (aplicată o dată), conflict de versiune, aprobare între timp, `opId` furat de alt utilizator, operații invalide, pull incremental.
+- Rămâne pentru M3: IndexedDB, service worker, coada din browser, testul E2E cu reload offline.
