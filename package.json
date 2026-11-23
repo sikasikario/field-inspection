@@ -1,0 +1,26 @@
+{
+  "name": "field-inspection",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Inspecții de teren offline — proiect Tehnologii Web (Tema 7)",
+  "type": "module",
+  "workspaces": [
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "dev:server": "npm run dev --workspace server",
+    "dev:client": "npm run dev --workspace client",
+    "seed": "npm run seed --workspace server",
+    "test": "npm test --workspace server",
+    "coverage": "npm run coverage --workspace server",
+    "build": "npm run build --workspace client",
+    "start": "npm start --workspace server"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}
