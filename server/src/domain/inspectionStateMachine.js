@@ -32,6 +32,7 @@ export const EDITABLE_STATUSES = Object.freeze([STATUS.ASSIGNED, STATUS.IN_PROGR
 export class TransitionError extends Error {
   constructor(code, message) {
     super(message);
+    this.name = 'TransitionError';
     this.code = code;
   }
 }

@@ -25,7 +25,8 @@ export async function seed() {
   const pick = (arr) => arr[Math.floor(rand() * arr.length)];
 
   await sequelize.sync({ force: true });
-  const passwordHash = await bcrypt.hash(SEED_PASSWORD, 10);
+  // În teste folosim un cost bcrypt mic, ca seed-ul repetat să fie rapid.
+  const passwordHash = await bcrypt.hash(SEED_PASSWORD, process.env.NODE_ENV === 'test' ? 4 : 10);
 
   const coordinator = await User.create({
     email: 'coordonator@demo.ro', name: 'Ana Coordonator', role: ROLE.COORDINATOR, passwordHash,
