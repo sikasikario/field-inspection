@@ -62,4 +62,23 @@ Un conflict apare când inspecția s-a schimbat pe server după ce inspectorul a
 - `GET /api/sync/pull?since=` aduce doar inspecțiile modificate de la ultima sincronizare.
 - Conflictele sunt raportate per operație (409 `VERSION_CONFLICT` / `NOT_EDITABLE`, cu varianta serverului), iar restul lotului continuă.
 - Teste în `server/tests/sync.test.js`: lot offline complet, lot retransmis de 3 ori (o singură aplicare), **aceeași operație trimisă de 5 ori în paralel** (aplicată o dată), conflict de versiune, aprobare între timp, `opId` furat de alt utilizator, operații invalide, pull incremental.
-- Rămâne pentru M3: IndexedDB, service worker, coada din browser, testul E2E cu reload offline.
+
+
+## Stadiu M3: partea de client, implementată și verificată în browser
+- IndexedDB: `client/src/lib/db.js`; motor de sincronizare și coadă: `client/src/lib/syncEngine.js`; service worker: `client/public/sw.js`.
+- Teste E2E (`e2e/offline.spec.js`, Chrome real prin Playwright):
+
+| Scenariu | Ce se verifică |
+|---|---|
+| Mod avion + reload + perioadă lungă offline | răspunsurile și trimiterea făcute offline supraviețuiesc reîncărcării; motorul reîncearcă de mai multe ori fără să piardă nimic; la revenire, inspecția apare pe server `SUBMITTED`, cu toate răspunsurile, fără inspecții dublate |
+| Retransmisii duplicate (simulator) | crearea ajunge de 3 ori la server (răspuns pierdut + cerere dublă), dar există exact o inspecție nouă |
+| Conflict | modificare offline + modificare de pe alt dispozitiv → banner cu diferența → „Păstrează varianta mea” → pe server rămâne varianta locală, versiunea a crescut corect |
+
+- Perioada offline: implicit 20 s (rulare rapidă). Scenariul de **10 minute** din fișa temei: `E2E_OFFLINE_MS=600000 npm run e2e` (verificat, vezi `docs/testing.md`).
+
+## Limite
+- Datele locale nu sunt criptate pe dispozitiv; cine are acces la browserul deblocat le poate citi.
+- Dacă utilizatorul șterge datele browserului înainte de sincronizare, modificările nesincronizate se pierd.
+- O inspecție reasignată altui inspector rămâne în baza locală a primului până la deconectare (pull-ul aduce doar inspecțiile vizibile, nu și ștergerile).
+- Un token expirat oprește sincronizarea până la o nouă autentificare; coada rămâne intactă.
+- Service worker-ul și reload-ul offline funcționează în build-ul de producție (`npm run build && npm start`), nu în `npm run dev`.

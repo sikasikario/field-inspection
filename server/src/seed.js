@@ -1,6 +1,7 @@
 // Date sintetice reproductibile: aceeași rulare produce mereu aceleași date.
 // Rulare: npm run seed (șterge și recreează baza de date).
 import { randomUUID } from 'node:crypto';
+import { pathToFileURL } from 'node:url';
 import bcrypt from 'bcryptjs';
 import {
   sequelize, User, Site, ChecklistTemplate, ChecklistItem, Inspection, Answer,
@@ -116,7 +117,8 @@ export async function seed() {
 }
 
 // Rulat direct din linia de comandă (nu la import din teste).
-if (import.meta.url === `file://${process.argv[1]}`) {
+// pathToFileURL codifică corect căile cu spații (ex. „proiect Tehnologii Web” → „proiect%20Tehnologii%20Web”).
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const result = await seed();
   console.log(`Seed gata: 1 coordonator, ${result.inspectors.length} inspectori, ${result.sites.length} locații, ${result.inspections} inspecții.`);
   console.log(`Parola pentru toate conturile demo: ${SEED_PASSWORD}`);

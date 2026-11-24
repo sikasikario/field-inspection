@@ -30,16 +30,30 @@ Conturi demo (parola pentru toate: `parola123`):
 ## Teste
 
 ```bash
-npm test          # toate testele backend
+npm test          # toate testele backend (Vitest)
 npm run coverage  # teste + raport de acoperire (server/coverage/index.html)
+npm run e2e       # teste în browser (Playwright): offline, reload, sincronizare, conflict, coordonator
 ```
 
-## Producție (local)
+Prima dată, pentru `npm run e2e`: `npx playwright install chromium` (descarcă browserul de test).
+Scenariul complet de 10 minute offline din fișa temei: `E2E_OFFLINE_MS=600000 npm run e2e`.
+
+## Producție (local) și demonstrația offline
+
+Modul offline complet (inclusiv reîncărcarea paginii fără rețea) funcționează în build-ul de producție, unde e activ service worker-ul:
 
 ```bash
 npm run build     # construiește frontend-ul în client/dist
-npm start         # pornește serverul în mod producție
+npm start         # server + aplicație pe http://localhost:3000
 ```
+
+Demonstrație:
+1. Deschide http://localhost:3000 și intră ca `ion@demo.ro`. Așteaptă „Totul este sincronizat”.
+2. DevTools (Cmd+Opt+I) → tab **Network** → bifează **Offline**.
+3. Deschide o inspecție, completează răspunsurile. Bara de sus arată „modificări nesincronizate”.
+4. Reîncarcă pagina (Cmd+R): aplicația pornește, iar răspunsurile sunt încă acolo.
+5. Debifează **Offline**: modificările se trimit automat, iar bara devine verde.
+6. Opțional: în panoul **Simulator de rețea** (jos), programează „Răspuns pierdut” sau „Cerere duplicată” și urmărește jurnalul.
 
 ## Documentație
 - [Cerințe](docs/requirements.md)
@@ -51,4 +65,5 @@ npm start         # pornește serverul în mod producție
 ## Stadiu
 - [x] M1: analiză, design, schelet executabil
 - [x] M2: API, persistență, reguli, teste, primul scenariu de pachet (EXT complet pe server, sincronizare idempotentă)
-- [ ] M3: SPA completă, pachete validate, E2E, încărcare, ADR, demo
+- [x] M3 (parțial): SPA completă pentru ambele roluri, offline în browser, simulator de rețea, teste E2E
+- [ ] M3 (rest): test de încărcare și capacitate, ADR-uri finale

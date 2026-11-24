@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import express from 'express';
 import cors from 'cors';
 import { config } from './config.js';
@@ -23,6 +24,14 @@ export function createApp() {
   app.use('/api/reports', reportsRouter);
   app.use('/api/deliveries', deliveriesRouter);
   app.use('/api', referenceRouter);
+
+  if (config.serveClient) {
+    // Producție: același server livrează și aplicația React. Orice rută care nu e /api
+    // primește index.html, iar React Router alege pagina.
+    const dist = fileURLToPath(new URL('../../client/dist', import.meta.url));
+    app.use(express.static(dist));
+    app.get(/^\/(?!api\/).*/, (req, res) => res.sendFile('index.html', { root: dist }));
+  }
 
   // Orice rută necunoscută primește același format de eroare.
   app.use('/api', (req, res) => {

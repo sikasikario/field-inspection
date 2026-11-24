@@ -82,7 +82,16 @@ Format unic de eroare: `{ "error": { "code": "INVALID_TRANSITION", "message": ".
 - **Idempotența sincronizării.** Rezultatul fiecărei operații e salvat în `SyncOperation` în aceeași tranzacție cu modificarea. Ori se salvează amândouă, ori niciuna. Erorile 5xx nu se salvează (clientul poate reîncerca); erorile 4xx da (retransmiterea primește același răspuns).
 - **Outbox pentru EXT.** Aprobarea creează o livrare `PENDING` în aceeași tranzacție; un worker din proces o trimite. Livrările sunt în baza de date, deci supraviețuiesc unui restart.
 
-## 6. Structura codului
+## 6. Frontend (M3)
+- **Inspector: offline-first.** Paginile inspectorului citesc și scriu doar în IndexedDB (`client/src/lib/syncEngine.js`). Orice modificare devine o operație în coada `outbox`, cu `opId` unic. Motorul trimite coada la revenirea rețelei (evenimentul `online`), la fiecare 15 s și imediat după o modificare. La eșec reîncearcă cu backoff (2 s → 30 s).
+- **Versiunea de bază se fixează la prima trimitere.** O operație retrimisă e identică, deci serverul o recunoaște după `opId`.
+- **Conflictele** apar ca banner în formular, cu diferențele dintre varianta locală și cea de pe server și cu butoanele „Păstrează varianta mea” / „Folosește varianta serverului”.
+- **Service worker** (`client/public/sw.js`): păstrează fișierele aplicației în cache, ca pagina să pornească după reload fără rețea. Activ doar în build-ul de producție.
+- **Coordonator: online.** Paginile lui folosesc direct API-ul (filtrare, ordonare, paginare pe server). Lucrul offline e cerut doar pentru inspectori.
+- **Simulator de rețea pe client** (`client/src/lib/netSim.js`): defecte programate pentru cererile de sincronizare (fără rețea, timeout, răspuns pierdut, cerere duplicată, lent).
+- **Câte o bază locală pe utilizator** (`field-inspection-u<id>`): doi inspectori pe același dispozitiv nu își văd datele unul altuia.
+
+## 7. Structura codului
 
 ```
 server/src/
@@ -94,6 +103,9 @@ server/src/
   routes/            rute Express (subțiri, apelează serviciile)
   auth.js, errors.js, validation.js
 server/tests/        teste Vitest + Supertest
-client/src/          SPA React
+client/src/lib/      API, sesiune, IndexedDB, motor de sincronizare, simulator de rețea
+client/src/pages/    pagini inspector și coordonator
+client/public/sw.js  service worker
+e2e/                 teste Playwright în browser
 docs/                documentație
 ```

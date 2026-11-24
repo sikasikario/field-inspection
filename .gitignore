@@ -6,3 +6,7 @@ coverage/
 .env
 .DS_Store
 notite-prezentare/
+test-results/
+playwright-report/
+*.sqlite-wal
+*.sqlite-shm

@@ -47,7 +47,22 @@ Excluderi justificate: `src/index.js` (doar pornește serverul), `src/seed.js` (
 
 Raportul HTML se generează cu `npm run coverage` în `server/coverage/index.html`.
 
+### Teste end-to-end (M3)
+`npm run e2e` pornește serverul în mod producție (cu frontend-ul construit și o bază separată) și rulează 5 scenarii în Chrome:
+
+| Test | Ce verifică |
+|---|---|
+| OFF: offline + reload + perioadă lungă | completare și trimitere offline, reload fără rețea (service worker), reîncercări eșuate fără pierderi, sincronizare corectă la revenire, nicio inspecție dublată |
+| EXT (client): răspuns pierdut + cerere duplicată | aceeași creare ajunge de 3 ori la server → exact o inspecție |
+| OFF: conflict | detectare, afișarea diferențelor, rezolvare „păstrează varianta mea”, versiune corectă |
+| Coordonator | filtrare după stare (în URL), aprobare, raport și livrări |
+| Permisiuni UI | inspectorul nu ajunge la paginile coordonatorului |
+
+Scenariul de **10 minute offline** cerut de fișa temei (`E2E_OFFLINE_MS=600000`) a fost rulat complet: trecut (10,0 min), cu reload offline înainte de revenirea online.
+
+Stabilitate: suita a rulat de 6 ori la rând fără eșecuri, după corectarea a două probleme de sincronizare în teste (vezi `ai-usage.md`).
+
 ### Lacune cunoscute și riscuri
 - `startDeliveryWorker` (bucla periodică) nu e testată direct; logica ei (`processDueDeliveries`) e testată complet. Risc mic.
 - Concurența e testată pe baza de date în memorie; comportamentul cu fișier SQLite în mod WAL e verificat manual și va fi măsurat în testul de încărcare (M3).
-- Frontend-ul nu are încă teste (M3: E2E cu Playwright).
+- Frontend-ul e testat doar end-to-end (nu are teste unitare de componente). Motorul de sincronizare e acoperit indirect, prin scenariile E2E.

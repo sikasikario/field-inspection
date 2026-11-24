@@ -14,6 +14,8 @@ export const config = {
   // În teste folosim o bază de date în memorie, ca fiecare rulare să pornească de la zero.
   dbStorage: env === 'test' ? ':memory:' : (process.env.DB_STORAGE ?? 'data/app.sqlite'),
   clientOrigin: process.env.CLIENT_ORIGIN ?? 'http://localhost:5173',
+  // În producție, serverul livrează și frontend-ul construit (client/dist), pe aceeași origine.
+  serveClient: env === 'production' || process.env.SERVE_CLIENT === '1',
   // Pachetul EXT: registrul extern (simulat local) și parametrii de livrare.
   registryUrl: process.env.REGISTRY_URL ?? 'http://localhost:4000',
   delivery: {

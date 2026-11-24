@@ -10,7 +10,8 @@
     "seed": "node --env-file-if-exists=.env src/seed.js",
     "test": "vitest run",
     "coverage": "vitest run --coverage",
-    "registry": "node src/external/runRegistry.js"
+    "registry": "node src/external/runRegistry.js",
+    "e2e:server": "node src/seed.js && node src/index.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

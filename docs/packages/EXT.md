@@ -47,4 +47,7 @@ Toate testele folosesc simulatorul configurat explicit (fără aleatoriu), deci 
 | registru oprit | eroare de rețea, reîncercare programată |
 | reluare manuală | `FAILED → PENDING → SENT`, cu aceeași cheie de idempotență |
 
-Simulatorul de rețea între client și server (punctul 2) se face în M3, împreună cu motorul de sincronizare din browser.
+## Stadiu M3: simulatorul de rețea client–server
+- `client/src/lib/netSim.js`, cu panou în interfață („Simulator de rețea”, jos în paginile inspectorului) și jurnal de evenimente.
+- Defecte: fără rețea, timeout, **răspuns pierdut** (cererea ajunge la server și e aplicată, dar clientul nu află), **cerere duplicată** (trimisă de două ori simultan), rețea lentă.
+- Verificat în E2E: crearea unei inspecții ajunge de 3 ori la server și rezultă exact o inspecție (idempotență prin `opId` + UUID generat pe client).

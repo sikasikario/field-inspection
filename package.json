@@ -16,12 +16,16 @@
     "coverage": "npm run coverage --workspace server",
     "build": "npm run build --workspace client",
     "start": "npm start --workspace server",
-    "registry": "npm run registry --workspace server"
+    "registry": "npm run registry --workspace server",
+    "e2e": "playwright test"
   },
   "engines": {
     "node": ">=22"
   },
   "overrides": {
     "uuid": "^11.1.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1"
   }
 }
